@@ -88,25 +88,53 @@ public class SøkeBinærTre<T>  implements Beholder<T> {
     }
 
     public boolean tom() { return antall == 0; }
+// Oppgave 1 ------------------------------------------------------------------------------------------------
+/*Oppgave 1 (Legge inn verdier)
+En Node har referanser til sine barn og sin forelder. Forelder må få riktig verdi ved hver innlegging,
+men rotnoden skal ha null som sin forelder. Lag metoden public boolean leggInn(T verdi), som legger inn en
+verdi riktig sted i treet. En null-verdi er ikke lov, og skal kaste en NullPointerException.
+Du kan se på koden i kapittel 5.2 men må gjøre endringene som trengs for at forelder-pekeren får korrekt verdi for hver node*/
+    public boolean leggInn(T verdi) {
+        throw new UnsupportedOperationException();
+    }
 
-    // Oppgave 1
-    public boolean leggInn(T verdi) { throw new UnsupportedOperationException(); }
+// Oppgave 2 ------------------------------------------------------------------------------------------------
+/*Oppgave 2 (Antall duplikater)
+Metodene inneholder(), antall(), og tom() er allerede kodet. Treet tillater
+duplikater, så en verdi kan forekomme flere ganger. Lag kode for den nye metoden
+antall(T verdi), som teller hvor mange ganger verdi dukker opp i treet. Om
+en verdi ikke er i treet (inkludert om verdien er null) skal metoden returnere 0.*/
+    public int antall(T verdi){
+        throw new UnsupportedOperationException();
+    }
 
-
-    // Oppgave 2
-    public int antall(T verdi){ throw new UnsupportedOperationException(); }
-
-    // Oppgave 3
+// Oppgave 3 ------------------------------------------------------------------------------------------------
+/*Oppgave 3 (Postorden)
+Lag hjelpemetodene private Node førstePostorden(Node p) og private Node nestePostorden(Node p).
+Da metodene er private, kan vi anta at parameteren p ikke er null, da det antas at vi passer på
+ at vi ikke sender inn null til disse metodene. Metoden førstePostorden skal returnere første node i postorden som har
+p som rot, og nestePostorden skal returnere noden skom kommer etter p i postorden.
+Hvis p er den siste noden i postorden, skal metoden returnere null.*/
     private Node<T> førstePostorden(Node<T> p) {
+
         throw new UnsupportedOperationException();
     }
 
     private Node<T> nestePostorden(Node<T> p) {
+
         throw new UnsupportedOperationException();
     }
 
-    // Oppgave 4
+// Oppgave 4 ------------------------------------------------------------------------------------------------
+/*Oppgave 4 (Utføre Oppgave i Postorden)
+Lag hjelpemetodene public void postorden(Oppgave <? super T> oppgave) og
+private void postordenRekursiv(Node p, Oppgave<? super T> oppgave)som brukes til å utføre en Oppgave.
+Oppgaven kan for eksempel være å skrive noe til skjerm, og da vil denne metoden skrive ut treet i postorden.
+Den første av disse metodene skal implementeres uten bruk av rekursjon, og uten bruk av hjelpestrukturer
+som en stack/stabel eller queue/kø. Du skal i stedet bruke funksjonen nestePostorden fra forrige oppgave.
+For den rekursive metoden skal du lage et rekursivt kall som traverserer treet i postorden-rekkefølge. */
     public void postOrden(Oppgave<? super T> oppgave) {
+
         throw new UnsupportedOperationException();
     }
 
@@ -115,11 +143,28 @@ public class SøkeBinærTre<T>  implements Beholder<T> {
     }
 
     private void postOrdenRekursiv(Node<T> p, Oppgave<? super T> oppgave) {
+
         throw new UnsupportedOperationException();
     }
 
-    // Oppgave 5
-    public boolean fjern(T verdi) { throw new UnsupportedOperationException(); }
-    public int fjernAlle(T verdi) { throw new UnsupportedOperationException(); }
-    public void nullstill() { throw new UnsupportedOperationException(); }
+// Oppgave 5 ------------------------------------------------------------------------------------------------
+/*Oppgave 5 (Fjerne element)
+Lag metoden public boolean fjern(T verdi). Du kan se på koden i kapittel 5.2.8,
+men må gjøre endringene som trengs for at forelder-pekeren får rett verdi.
+Lag så metoden public int fjernAlle(T verdi). Denne skal fjerne alle forekomster av en verdi i treet,
+og returnere antallet som ble fjernet. Om treet ikke inneholder noen forekomster (inkludert om treet er tomt)
+skal metoden returnere 0. Lag til slutt metoden public void nullstill().
+Den skal gå gjennom treet og passe på at alle nodepekere og nodeverdier i treet blir nullet ut.
+Det er ikke tilstrekkelig å kun sette rot til null og antall til 0. */
+    public boolean fjern(T verdi) {
+        throw new UnsupportedOperationException();
+    }
+
+    public int fjernAlle(T verdi) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void nullstill() {
+        throw new UnsupportedOperationException();
+    }
 }
