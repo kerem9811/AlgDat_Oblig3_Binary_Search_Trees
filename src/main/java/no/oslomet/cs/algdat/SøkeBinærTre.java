@@ -126,7 +126,6 @@ en verdi ikke er i treet (inkludert om verdien er null) skal metoden returnere 0
     public int antall(T verdi){
         if (tom() || antall == 0 || verdi == null) return 0;
                                                         // Hvis verdi ikke finnes blir det 0
-
         Node<T> p = rot;                                // Begynner i rot
         int teller = 0;                                 // Initialiserer en teller
 
@@ -146,16 +145,24 @@ en verdi ikke er i treet (inkludert om verdien er null) skal metoden returnere 0
 Lag hjelpemetodene private Node førstePostorden(Node p) og private Node nestePostorden(Node p).
 Da metodene er private, kan vi anta at parameteren p ikke er null, da det antas at vi passer på
  at vi ikke sender inn null til disse metodene. Metoden førstePostorden skal returnere første node i postorden som har
-p som rot, og nestePostorden skal returnere noden skom kommer etter p i postorden.
+p som rot, og nestePostorden skal returnere noden som kommer etter p i postorden.
 Hvis p er den siste noden i postorden, skal metoden returnere null.*/
     private Node<T> førstePostorden(Node<T> p) {
+        if (p == null) return null;
 
-        throw new UnsupportedOperationException();
+        p = rot;
+        while (true){
+            if (p.venstre != null) p = p.venstre;
+            else if (p.høyre != null) p = p.høyre;
+            else return p;
+        }
     }
 
     private Node<T> nestePostorden(Node<T> p) {
+        if (p == null) return null;
 
-        throw new UnsupportedOperationException();
+        p = rot;
+        return p;
     }
 
 // Oppgave 4 ------------------------------------------------------------------------------------------------
