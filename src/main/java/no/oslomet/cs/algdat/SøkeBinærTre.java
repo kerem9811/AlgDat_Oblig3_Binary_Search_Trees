@@ -1,9 +1,6 @@
 package no.oslomet.cs.algdat;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.StringJoiner;
+import java.util.*;
 
 public class SøkeBinærTre<T>  implements Beholder<T> {
 
@@ -88,6 +85,7 @@ public class SøkeBinærTre<T>  implements Beholder<T> {
     }
 
     public boolean tom() { return antall == 0; }
+
 // Oppgave 1 ------------------------------------------------------------------------------------------------
 /*Oppgave 1 (Legge inn verdier)
 En Node har referanser til sine barn og sin forelder. Forelder må få riktig verdi ved hver innlegging,
@@ -95,7 +93,28 @@ men rotnoden skal ha null som sin forelder. Lag metoden public boolean leggInn(T
 verdi riktig sted i treet. En null-verdi er ikke lov, og skal kaste en NullPointerException.
 Du kan se på koden i kapittel 5.2 men må gjøre endringene som trengs for at forelder-pekeren får korrekt verdi for hver node*/
     public boolean leggInn(T verdi) {
-        throw new UnsupportedOperationException();
+        Objects.requireNonNull(verdi, "Verdi kan ikke være null-peker!");
+
+        Node<T> p = rot, q = null;                  // Starter i rot
+        int cmp = 0;                                // Hjelpevariabel
+
+        while (p != null) {                         // Fortsetter til p er ute av treet
+            q = p;                                  // q er p sin forelder
+            cmp = comp.compare(verdi, p.verdi);     // sammenligner med komparatoren
+            p = cmp < 0 ? p.venstre : p.høyre;      // flytter p
+        }                                           // p er nå null, altså ute av treet. q er den siste vi passerte
+
+        p = new Node<>(verdi, q);                   // Oppretter ny node på p-pekeren, med q som forelder
+        if (q == null) rot = p;                     // Hvis q er null, blir p rotnoden
+        else if (cmp < 0) {                         // Hvis verdi er mindre, blir det venstrebarn
+            q.venstre = p;
+        } else {                                    // Hvis verdi er lik eller større blir det høyrebarn
+            q.høyre = p;
+        }
+
+        endringer++;                                // Inkrementerer endringer
+        antall++;                                   // og antall
+        return true;
     }
 
 // Oppgave 2 ------------------------------------------------------------------------------------------------
@@ -105,7 +124,21 @@ duplikater, så en verdi kan forekomme flere ganger. Lag kode for den nye metode
 antall(T verdi), som teller hvor mange ganger verdi dukker opp i treet. Om
 en verdi ikke er i treet (inkludert om verdien er null) skal metoden returnere 0.*/
     public int antall(T verdi){
-        throw new UnsupportedOperationException();
+        if (tom() || antall == 0 || verdi == null) return 0;
+                                                        // Hvis verdi ikke finnes blir det 0
+
+        Node<T> p = rot;                                // Begynner i rot
+        int teller = 0;                                 // Initialiserer en teller
+
+        while (p != null) {                             // Fortsetter til p blir null
+            int cmp = comp.compare(verdi, p.verdi);     // Sammenligner verdien med nodens verdi
+            if (cmp < 0) p = p.venstre;                 // Gå til venstre hvis mindre
+            else {                                      // Gå til høyre hvis lik eller større
+                if (cmp == 0) teller++;                 // Hvis lik øk teller
+                p = p.høyre;                            // Gå til høyre
+            }
+        }
+        return teller;
     }
 
 // Oppgave 3 ------------------------------------------------------------------------------------------------
