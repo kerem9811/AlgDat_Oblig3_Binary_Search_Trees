@@ -196,7 +196,7 @@ class Oppgave5Test {
         for (int verdi : a) tre.leggInn(verdi);
 
         assertTrue(tre.fjern(8), "Gir feil svar når vi fjerner verdi det er flere av.");
-        assertEquals("[2, 1, 4, 8, 3, 6, 8, 7, 11, 10, 9, 6]", tre.toStringPostOrder(), "Element fjernet for mange ganger eller annet galt gjort med treet.");
+        assertEquals("[2, 1, 4, 5, 3, 6, 8, 7, 11, 10, 9, 6]", tre.toStringPostOrder(), "Element fjernet for mange ganger eller annet galt gjort med treet.");
         assertEquals(12, tre.antall(), "Minker ikke antall elementer eller minker for mye når element det finnes flere av fjernes.");
         assertTrue(tre.inneholder(8), "Finner ikke andre verdi i treet etter at første er fjernet.");
     }
@@ -213,6 +213,7 @@ class Oppgave5Test {
         SøkeBinærTre<Integer> tre =
                 new SøkeBinærTre<>(Comparator.naturalOrder());
         int[] a = {1, 4, 1, 3, 1, 2, 1, 1};
+        for (int verdi : a) tre.leggInn(verdi);
         assertDoesNotThrow(() -> tre.fjernAlle(5), "Gir feilmelding når vi ferner ikke-eksisterende verdi.");
         assertEquals(0, tre.fjernAlle(5), "Gir feil svar på antall fjernede verdier for ikke-eksisterende verdi.");
         assertEquals(8, tre.antall(), "Endrer antall når ingenting blir fjernet.");
@@ -223,6 +224,7 @@ class Oppgave5Test {
         SøkeBinærTre<Integer> tre =
                 new SøkeBinærTre<>(Comparator.naturalOrder());
         int[] a = {1, 4, 1, 3, 1, 2, 1, 1};
+        for (int verdi : a) tre.leggInn(verdi);
         assertEquals(1, tre.fjernAlle(4), "Gir feil svar når vi fjerner unik verdi.");
         assertEquals(7, tre.antall(), "Feil antall når ett element fjernes.");
         assertFalse(tre.inneholder(4), "Finner fremdeles fjernet verdi.");
@@ -233,6 +235,7 @@ class Oppgave5Test {
         SøkeBinærTre<Integer> tre =
                 new SøkeBinærTre<>(Comparator.naturalOrder());
         int[] a = {1, 4, 1, 3, 1, 2, 1, 1};
+        for (int verdi : a) tre.leggInn(verdi);
         assertEquals(5, tre.fjernAlle(1), "Gir feil svar når vi fjerner flere elementer.");
         assertEquals(3, tre.antall(), "Feil antall etter å ha fjernet flere verdier.");
         assertFalse(tre.inneholder(1), "Finner fremdeles fjernet verdi etter å ha fjernet flere.");
