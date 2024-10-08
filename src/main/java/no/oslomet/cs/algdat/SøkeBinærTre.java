@@ -148,24 +148,39 @@ Da metodene er private, kan vi anta at parameteren p ikke er null, da det antas 
 p som rot, og nestePostorden skal returnere noden som kommer etter p i postorden.
 Hvis p er den siste noden i postorden, skal metoden returnere null.*/
     private Node<T> førstePostorden(Node<T> p) {
-        if (p == null) return null;
-
-        p = rot;
-        while (true){
-            if (p.venstre != null) p = p.venstre;
-            else if (p.høyre != null) p = p.høyre;
-            else return p;
+        if (p == null) return null;                 // Hvis null, returner null
+        while (true) {                              // Går i loop til vi finner første node i postorden
+            if (p.venstre != null) p = p.venstre;   // Hvis p har venstrebarn, gå dit
+            else if (p.høyre != null) p = p.høyre;  // Hvis p derimot har høyrebarn, gå dit
+            else return p;                          // Hvis ingen barn og er helt til venstre
         }
     }
 
     private Node<T> nestePostorden(Node<T> p) {
-        if (p == null) return null;
-
-        p = rot;
-        return p;
+        if (p == null) {
+            return null;
+        }
+        if (p.forelder == null) { // Rotnode
+            return null;
+        } else if (p == p.forelder.høyre || p.forelder.høyre == null) {
+            // Hvis p er høyre barn eller ikke har noen høyre søsken, gå opp
+            return p.forelder;
+        } else {
+            // Hvis p er venstre barn og har et høyre søsken
+            p = p.forelder.høyre;
+            while (p.venstre != null || p.høyre != null) {
+                if (p.venstre != null) {
+                    p = p.venstre;
+                } else {
+                    p = p.høyre;
+                }
+            }
+            return p;
+        }
     }
 
-// Oppgave 4 ------------------------------------------------------------------------------------------------
+
+    // Oppgave 4 ------------------------------------------------------------------------------------------------
 /*Oppgave 4 (Utføre Oppgave i Postorden)
 Lag hjelpemetodene public void postorden(Oppgave <? super T> oppgave) og
 private void postordenRekursiv(Node p, Oppgave<? super T> oppgave)som brukes til å utføre en Oppgave.
