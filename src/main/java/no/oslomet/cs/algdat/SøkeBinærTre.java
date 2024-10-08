@@ -30,7 +30,7 @@ public class SøkeBinærTre<T>  implements Beholder<T> {
         }
 
         public boolean hasNext() {
-            return (neste == null);
+            return (neste != null);
         }
 
         public T next() {
