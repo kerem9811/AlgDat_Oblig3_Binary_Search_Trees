@@ -157,25 +157,23 @@ Hvis p er den siste noden i postorden, skal metoden returnere null.*/
     }
 
     private Node<T> nestePostorden(Node<T> p) {
-        if (p == null) {
-            return null;
-        }
-        if (p.forelder == null) { // Rotnode
-            return null;
+        if (p == null) return null;                         // Hvis null, returner null
+
+        if (p.forelder == null) {                           // Hvis p ikke har forelder, så er den rot.
+            return null;                                    // Rot er sist i postorden, ingen etter den, så returner null
         } else if (p == p.forelder.høyre || p.forelder.høyre == null) {
-            // Hvis p er høyre barn eller ikke har noen høyre søsken, gå opp
-            return p.forelder;
+                                                            // Hvis p er høyre barn eller
+            return p.forelder;                              // ikke har noen høyre søsken, gå opp til forelder
         } else {
-            // Hvis p er venstre barn og har et høyre søsken
-            p = p.forelder.høyre;
-            while (p.venstre != null || p.høyre != null) {
-                if (p.venstre != null) {
+            p = p.forelder.høyre;                           // Hvis p er venstre barn og har et høyre søsken
+            while (p.venstre != null || p.høyre != null) {  // så bruker vi denne løkken til å traversere ned
+                if (p.venstre != null) {                    // høyre søskens subtre for å finne noden lengst til venstre
                     p = p.venstre;
                 } else {
                     p = p.høyre;
                 }
-            }
-            return p;
+            }                                               // Nå peker p på noden lengst til venstre i høyre søskens subtre
+            return p;                                       // Denne noden er den neste i postorden.
         }
     }
 
@@ -189,17 +187,22 @@ Den første av disse metodene skal implementeres uten bruk av rekursjon, og uten
 som en stack/stabel eller queue/kø. Du skal i stedet bruke funksjonen nestePostorden fra forrige oppgave.
 For den rekursive metoden skal du lage et rekursivt kall som traverserer treet i postorden-rekkefølge. */
     public void postOrden(Oppgave<? super T> oppgave) {
-
-        throw new UnsupportedOperationException();
+        Node<T> p = førstePostorden(rot);       // Bruker metodene fra forrige oppgave
+        while (p != null) {                     // Så lenge første node i postorden fra rot ikke er null
+            oppgave.utførOppgave(p.verdi);      // så utfører vi en generisk oppgave med p sin verdi
+            p = nestePostorden(p);              // Så går vi videre til neste node
+        }
     }
 
     public void postOrdenRekursiv(Oppgave<? super T> oppgave) {
-        postOrdenRekursiv(rot, oppgave); // Ferdig implementert
+        postOrdenRekursiv(rot, oppgave);        // Ferdig implementert
     }
 
     private void postOrdenRekursiv(Node<T> p, Oppgave<? super T> oppgave) {
-
-        throw new UnsupportedOperationException();
+        if (p == null) return;                  // Unngå nullpeker
+        postOrdenRekursiv(p.venstre, oppgave);  // Huskeregel postorden:
+        postOrdenRekursiv(p.høyre, oppgave);    // Venstre - høyre - rot
+        oppgave.utførOppgave(p.verdi);          // Pga postorden ligger oppgave til slutt
     }
 
 // Oppgave 5 ------------------------------------------------------------------------------------------------
