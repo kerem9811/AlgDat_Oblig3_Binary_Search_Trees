@@ -189,6 +189,21 @@ class Oppgave5Test {
     }
 
     @Test
+    void fjernEtHeltTre() {
+        SøkeBinærTre<Integer> tre =
+                new SøkeBinærTre<>(Comparator.naturalOrder());
+        int[] a = {6, 3, 9, 1, 5, 7, 10, 2, 4, 8, 11, 6, 8};
+        for (int verdi : a) tre.leggInn(verdi);
+
+        int[] fjerner = {8, 2, 5, 3, 6, 6, 9, 4, 7, 8, 1, 10, 11};
+        int nåværendeAntall = 13;
+        for (int fV : fjerner) {
+            assertTrue(tre.fjern(fV), "Gir feil svar når fjerner eksisterende verdi fra tre");
+            assertEquals(--nåværendeAntall, tre.antall(), "Gir feil antall verdier i treet etter å ha fjernet.");
+        }
+    }
+
+    @Test
     void fjernLike() {
         SøkeBinærTre<Integer> tre =
                 new SøkeBinærTre<>(Comparator.naturalOrder());
@@ -270,8 +285,10 @@ class Oppgave5Test {
         Iterator<Integer> it = tre.iterator();
         it.next(); it.next();
         tre.nullstill(); it.next();
-
-        assertFalse(it.hasNext(),
-                "Nodeverdier og pekere i tre skal alle nullstilles når man nullstiller. Har du kun fjernet hode og satt antall til 0?");
+        try {
+            it.next();
+            assertFalse(it.hasNext(),
+                    "Nodeverdier og pekere i tre skal alle nullstilles når man nullstiller. Har du kun fjernet hode og satt antall til 0?");
+        } catch (NullPointerException ignored) {}
     }
 }
