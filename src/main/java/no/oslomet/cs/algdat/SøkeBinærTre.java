@@ -190,7 +190,7 @@ For den rekursive metoden skal du lage et rekursivt kall som traverserer treet i
         Node<T> p = førstePostorden(rot);       // Bruker metodene fra forrige oppgave
         while (p != null) {                     // Så lenge første node i postorden fra rot ikke er null
             oppgave.utførOppgave(p.verdi);      // så utfører vi en generisk oppgave med p sin verdi
-            p = nestePostorden(p);              // Så går vi videre til neste node
+            p = nestePostorden(p);              // Så går vi videre til neste node, med metoden fra forrige oppgave
         }
     }
 
@@ -202,7 +202,7 @@ For den rekursive metoden skal du lage et rekursivt kall som traverserer treet i
         if (p == null) return;                  // Unngå nullpeker
         postOrdenRekursiv(p.venstre, oppgave);  // Huskeregel postorden:
         postOrdenRekursiv(p.høyre, oppgave);    // Venstre - høyre - rot
-        oppgave.utførOppgave(p.verdi);          // Pga postorden ligger oppgave til slutt
+        oppgave.utførOppgave(p.verdi);          // Derfor ligger utførOppgave til slutt
     }
 
 // Oppgave 5 ------------------------------------------------------------------------------------------------
@@ -215,7 +215,8 @@ skal metoden returnere 0. Lag til slutt metoden public void nullstill().
 Den skal gå gjennom treet og passe på at alle nodepekere og nodeverdier i treet blir nullet ut.
 Det er ikke tilstrekkelig å kun sette rot til null og antall til 0. */
     public boolean fjern(T verdi) {
-        throw new UnsupportedOperationException();
+
+        return true;
     }
 
     public int fjernAlle(T verdi) {
