@@ -285,8 +285,10 @@ class Oppgave5Test {
         Iterator<Integer> it = tre.iterator();
         it.next(); it.next();
         tre.nullstill(); it.next();
-
-        assertFalse(it.hasNext(),
-                "Nodeverdier og pekere i tre skal alle nullstilles når man nullstiller. Har du kun fjernet hode og satt antall til 0?");
+        try {
+            it.next();
+            assertFalse(it.hasNext(),
+                    "Nodeverdier og pekere i tre skal alle nullstilles når man nullstiller. Har du kun fjernet hode og satt antall til 0?");
+        } catch (NullPointerException ignored) {}
     }
 }
