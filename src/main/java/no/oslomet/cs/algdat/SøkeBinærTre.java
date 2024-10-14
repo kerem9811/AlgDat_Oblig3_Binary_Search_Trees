@@ -95,25 +95,34 @@ Du kan se på koden i kapittel 5.2 men må gjøre endringene som trengs for at f
     public boolean leggInn(T verdi) {
         Objects.requireNonNull(verdi, "Verdi kan ikke være null-peker!");
 
-        Node<T> p = rot, q = null;                  // Starter i rot
-        int cmp = 0;                                // Hjelpevariabel
+        Node<T> pekerNode = rot;                                    // Starter pekernode i rot
+        Node<T> forelderNode = null;                                // Lager forelderpeker
+        int sammenligner = 0;                                       // Hjelpevariabel
 
-        while (p != null) {                         // Fortsetter til p er ute av treet
-            q = p;                                  // q er p sin forelder
-            cmp = comp.compare(verdi, p.verdi);     // sammenligner med komparatoren
-            p = cmp < 0 ? p.venstre : p.høyre;      // flytter p
-        }                                           // p er nå null, altså ute av treet. q er den siste vi passerte
+        while (pekerNode != null) {                                 // Fortsetter til pekernode er ute av treet
+            forelderNode = pekerNode;                               // Oppdaterer forelderpekeren
+            sammenligner = comp.compare(verdi, pekerNode.verdi);    // sammenligner med komparatoren
 
-        p = new Node<>(verdi, q);                   // Oppretter ny node på p-pekeren, med q som forelder
-        if (q == null) rot = p;                     // Hvis q er null, blir p rotnoden
-        else if (cmp < 0) {                         // Hvis verdi er mindre, blir det venstrebarn
-            q.venstre = p;
-        } else {                                    // Hvis verdi er lik eller større blir det høyrebarn
-            q.høyre = p;
+            if (sammenligner < 0) {                                 // Hvis verdi er mindre, gå til venstre
+                pekerNode = pekerNode.venstre;
+            } else {                                                // Hvis verdi er større eller lik, gå til høyre
+                pekerNode = pekerNode.høyre;
+            }
         }
 
-        endringer++;                                // Inkrementerer endringer
-        antall++;                                   // og antall
+        pekerNode = new Node<>(verdi, forelderNode);                // Oppretter ny node på pekernoden, med foreldernode
+
+        if (forelderNode == null) rot = pekerNode;                  // Hvis foreldernoden er null, blir pekernoden rotnoden
+
+        else if (sammenligner < 0) {
+            forelderNode.venstre = pekerNode;                       // Hvis verdi er mindre, blir det venstrebarn
+
+        } else {
+            forelderNode.høyre = pekerNode;                         // Hvis verdi er lik eller større blir det høyrebarn
+        }
+
+        endringer++;                                                // Inkrementerer endringer
+        antall++;                                                   // og antall
         return true;
     }
 
@@ -124,23 +133,29 @@ duplikater, så en verdi kan forekomme flere ganger. Lag kode for den nye metode
 antall(T verdi), som teller hvor mange ganger verdi dukker opp i treet. Om
 en verdi ikke er i treet (inkludert om verdien er null) skal metoden returnere 0.*/
     public int antall(T verdi){
-        if (tom() || antall == 0 || verdi == null) return 0;
-                                                        // Hvis verdi ikke finnes blir det 0
-        Node<T> p = rot;                                // Begynner i rot
-        int teller = 0;                                 // Initialiserer en teller
+        if (tom() || antall == 0 || verdi == null){
+            return 0;                                           // Hvis verdi ikke finnes returneres 0
+        }
 
-        while (p != null) {                             // Fortsetter til p blir null
-            int cmp = comp.compare(verdi, p.verdi);     // Sammenligner verdien med nodens verdi
-            if (cmp < 0) p = p.venstre;                 // Gå til venstre hvis mindre
-            else {                                      // Gå til høyre hvis lik eller større
-                if (cmp == 0) teller++;                 // Hvis lik øk teller
-                p = p.høyre;                            // Gå til høyre
+        Node<T> pekerNode = rot;                                // Begynner i rot
+        int teller = 0;                                         // Initialiserer en teller
+
+        while (pekerNode != null) {                             // Fortsetter til pekernoden blir null
+            int cmp = comp.compare(verdi, pekerNode.verdi);     // Sammenligner verdien med nodens verdi
+
+            if (cmp < 0){
+                pekerNode = pekerNode.venstre;                  // Gå til venstre hvis mindre
+            }
+            else {                                              // Gå til høyre hvis lik eller større
+
+                if (cmp == 0) teller++;                         // Hvis lik øk teller
+                pekerNode = pekerNode.høyre;                    // Gå til høyre
             }
         }
         return teller;
     }
 
-// Oppgave 3 ------------------------------------------------------------------------------------------------
+// Oppgave 3 --------------------------------------------------------------------------------------
 /*Oppgave 3 (Postorden)
 Lag hjelpemetodene private Node førstePostorden(Node p) og private Node nestePostorden(Node p).
 Da metodene er private, kan vi anta at parameteren p ikke er null, da det antas at vi passer på
@@ -178,7 +193,7 @@ Hvis p er den siste noden i postorden, skal metoden returnere null.*/
     }
 
 
-    // Oppgave 4 ------------------------------------------------------------------------------------------------
+    // Oppgave 4 ----------------------------------------------------------------------------------
 /*Oppgave 4 (Utføre Oppgave i Postorden)
 Lag hjelpemetodene public void postorden(Oppgave <? super T> oppgave) og
 private void postordenRekursiv(Node p, Oppgave<? super T> oppgave)som brukes til å utføre en Oppgave.
@@ -205,7 +220,7 @@ For den rekursive metoden skal du lage et rekursivt kall som traverserer treet i
         oppgave.utførOppgave(p.verdi);          // Derfor ligger utførOppgave til slutt
     }
 
-// Oppgave 5 ------------------------------------------------------------------------------------------------
+// Oppgave 5 --------------------------------------------------------------------------------------
 /*Oppgave 5 (Fjerne element)
 Lag metoden public boolean fjern(T verdi). Du kan se på koden i kapittel 5.2.8,
 men må gjøre endringene som trengs for at forelder-pekeren får rett verdi.
@@ -215,15 +230,150 @@ skal metoden returnere 0. Lag til slutt metoden public void nullstill().
 Den skal gå gjennom treet og passe på at alle nodepekere og nodeverdier i treet blir nullet ut.
 Det er ikke tilstrekkelig å kun sette rot til null og antall til 0. */
     public boolean fjern(T verdi) {
+        if (verdi == null) return false;                            // Kan ikke fjerne null
 
-        return true;
+        Node<T> pekerNode = rot;                                    // Starter i rot og finner noden vi skal fjerne fra
+        Node<T> forelderNode = null;                                // Holde styr på foreldrenoden
+
+        // Finne noden som skal fjernes -----------------------------------------------------------
+        while (pekerNode != null) {                                 // Looper gjennom treet
+            int cmp = comp.compare(verdi, pekerNode.verdi);         // Sammenligner input-verdi med nodens verdi
+
+            if (cmp < 0) {                                          // Hvis verdi er mindre, gå til venstre
+                forelderNode = pekerNode;                           // Oppdaterer foreldrenoden til å være pekernode
+                pekerNode = pekerNode.venstre;                      // Oppdaterer aktuellNode til dens venstre barn
+
+            } else if (cmp > 0) {                                   // Hvis verdi er større, gå til høyre
+                forelderNode = pekerNode;                           // Oppdaterer foreldrenoden til å være pekernode
+                pekerNode = pekerNode.høyre;                        // Oppdaterer pekernode til dens høyre barn
+
+            } else break;                                           // Hvis cmp er 0, har vi funnet noden vi skal fjerne
+        }
+
+        // Hvis pekernode er null, finnes ikke verdien i treet ------------------------------------
+        if (pekerNode == null) return false;
+
+        // Etter å ha funnet noden, må vi håndtere 3 tilfeller for fjerning -----------------------
+
+        // 1. pekernode har ingen barn, altså pekernode er en bladnode ****************************
+        if (pekerNode.venstre == null && pekerNode.høyre == null) {
+
+            if (pekerNode == rot) {                                 // pekernode er rot, treet blir tomt
+                rot = null;
+
+            } else if (pekerNode == forelderNode.venstre) {         // pekernode er foreldernoden sitt venstre barn
+                forelderNode.venstre = null;
+
+            } else {                                                // pekernode er foreldernoden sitt høyre barn
+                forelderNode.høyre = null;
+            }
+
+        // 2. p har nøyaktig ett barn, enten venstre eller høyre **********************************
+        } else if (pekerNode.venstre == null || pekerNode.høyre == null) {
+
+            Node<T> barneNode = pekerNode.venstre;                  // barnenoden er høyre eller venstre barnet til pekernoden
+            if (barneNode == null) {
+                barneNode = pekerNode.høyre;
+            }
+
+            if (pekerNode == rot) {
+                rot = barneNode;                                    // barnenoden blir ny rot
+            } else if (pekerNode == forelderNode.venstre) {
+                forelderNode.venstre = barneNode;                   // barnenoden erstatter pekernoden som foreldernoden sitt venstrebarn
+            } else {
+                forelderNode.høyre = barneNode;                     // barnenoden erstatter pekernoden som foreldernoden sitt høyrebarn
+            }
+
+            if (barneNode != null) {
+                barneNode.forelder = forelderNode;                  // Oppdatere foreldrepekeren til barnenoden
+            }
+
+        // 3. p har to barn, både venstre og høyre, bruke inorden-traversering ********************
+        } else {
+            Node<T> etterfølgerForelder = pekerNode;                // Forelder til inorden-etterfølgeren til pekernoden
+            Node<T> etterfølgerNode = pekerNode.høyre;              // Inorden-etterfølgeren til pekernoden er høyre barn
+
+            while (etterfølgerNode.venstre != null) {               // Finner inorden-etterfølgeren til pekernoden (minste verdi i høyre subtre)
+                etterfølgerForelder = etterfølgerNode;              // Oppdaterer etterfølgerforelderpekeren til å være forelder til etterfølgeren
+                etterfølgerNode = etterfølgerNode.venstre;          // Flytter etterfølgernoden til å sitt venstre barn
+            }
+
+            pekerNode.verdi = etterfølgerNode.verdi;                // Kopierer verdien til inorden-etterfølgeren til pekernoden
+
+            if (etterfølgerNode.høyre != null) {                    // Hvis etterfølgernoden har et høyre barn
+                etterfølgerNode.høyre.forelder = etterfølgerForelder;// Oppdaterer forelderpekeren
+            }
+
+            if (etterfølgerForelder == pekerNode) {                 // Hvis forelder til etterfølger var pekernoden sitt høyre barn
+                etterfølgerForelder.høyre = etterfølgerNode.høyre;  // Oppdaterer forelderpekeren
+
+            } else {                                                // Hvis etterfølgerNode ikke var pekernoden sitt høyre barn
+                etterfølgerForelder.venstre = etterfølgerNode.høyre;// Oppdaterer etterfølgerForelder sitt venstre barn til etterfølgerNode sitt høyre barn
+            }
+        }
+
+        antall--;                                                   // Reduserer nodetelleren
+        endringer++;                                                // Øker endrings-telleren
+        return true;                                                // Returnerer true for å indikere at fjerningen var vellykket
     }
 
     public int fjernAlle(T verdi) {
-        throw new UnsupportedOperationException();
+        if (tom() || verdi == null) {                   // Hvis treet er tomt eller verdi er null
+            return 0;                                   // Returner 0 for ingen fjerninger
+        }
+
+        int antallFjernet = 0;                          // Initialiserer en teller for antall fjerninger
+
+        while (fjern(verdi)) {                          // Fjerner noder med verdien så lenge fjern(verdi) returnerer true
+            antallFjernet++;                            // Øker telleren for hver vellykkede fjerning
+        }
+
+        return antallFjernet;                           // Returnerer det totale antallet noder med inputverdi som ble fjernet
     }
 
     public void nullstill() {
-        throw new UnsupportedOperationException();
+        Random tilfeldig = new Random();
+        int myntKast = tilfeldig.nextInt(2);
+        if (myntKast % 2 == 0) {                        // Velger tilfeldig metode for nullstilling
+            rot = nullstillRekursivt(rot);
+        } else {
+            rot = nullstillIterativt(rot);
+        }
+        antall = 0;
+    }
+
+    private Node<T> nullstillRekursivt(Node<T> inputNode) {
+        if (inputNode == null) return null;                         // Basecase: Når p er null, returner null
+
+        inputNode.venstre = nullstillRekursivt(inputNode.venstre);  // Nullstiller rekursivt venstre subtre
+        inputNode.høyre = nullstillRekursivt(inputNode.høyre);      // Nullstiller rekursivt høyre subtre
+        inputNode.forelder = null;                                  // Nullstiller forelder-pekeren
+        return null;                                                // Returnerer null for å nullstille noden
+    }
+
+    private Node<T> nullstillIterativt(Node<T> inputNode) {
+        if (inputNode == null) return null;                         // Hvis treet allerede er tomt, returner
+
+        Stack<Node<T>> stabel = new Stack<>();                      // Oppretter en stabel for å tømme treet iterativt
+        stabel.push(inputNode);                                     // Legger rotnoden på stabelen
+
+        while (!stabel.isEmpty()) {                                 // Så lenge stabelen ikke er tom,
+            Node<T> pekerNode = stabel.pop();                       // fjern øverste node fra stabelen
+
+            if (pekerNode.høyre != null) {                          // Hvis noden har et høyre barn
+                stabel.push(pekerNode.høyre);                       // Legg høyre barn på stabelen
+            }
+
+            if (pekerNode.venstre != null) {                        // Hvis noden har et venstre barn
+                stabel.push(pekerNode.venstre);                     // Legg venstre barn på stabelen
+            }
+
+            pekerNode.verdi = null;                                 // Nullstill nodens verdi
+            pekerNode.venstre = null;                               // Nullstill venstre barn
+            pekerNode.høyre = null;                                 // Nullstill høyre barn
+            pekerNode.forelder = null;                              // Nullstill forelder
+        }
+
+        return null;                                                // Returnerer null for å nullstille noden
     }
 }
