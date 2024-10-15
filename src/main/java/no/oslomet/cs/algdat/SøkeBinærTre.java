@@ -204,7 +204,8 @@ Den første av disse metodene skal implementeres uten bruk av rekursjon, og uten
 som en stack/stabel eller queue/kø. Du skal i stedet bruke funksjonen nestePostorden fra forrige oppgave.
 For den rekursive metoden skal du lage et rekursivt kall som traverserer treet i postorden-rekkefølge. */
     public void postOrden(Oppgave<? super T> oppgave) {
-        Node<T> p = førstePostorden(rot);       // Bruker metodene fra forrige oppgave
+        Node<T> p = førstePostorden(rot);       // Bruker metoden fra forrige oppgave for å traversere
+
         while (p != null) {                     // Så lenge første node i postorden fra rot ikke er null
             oppgave.utførOppgave(p.verdi);      // så utfører vi en generisk oppgave med p sin verdi
             p = nestePostorden(p);              // Så går vi videre til neste node, med metoden fra forrige oppgave
@@ -217,6 +218,7 @@ For den rekursive metoden skal du lage et rekursivt kall som traverserer treet i
 
     private void postOrdenRekursiv(Node<T> p, Oppgave<? super T> oppgave) {
         if (p == null) return;                  // Base case - Unngå nullpeker
+
         postOrdenRekursiv(p.venstre, oppgave);  // Huskeregel postorden:
         postOrdenRekursiv(p.høyre, oppgave);    // Venstre - høyre - rot
         oppgave.utførOppgave(p.verdi);          // Derfor ligger utførOppgave til slutt
@@ -345,7 +347,7 @@ Det er ikke tilstrekkelig å kun sette rot til null og antall til 0. */
                 p = p.høyre;
             } else {                                                // Fant noden med verdien vi leter etter
                 stabelTilFjerning.push(p);                          // Legger noden til stabelen
-                p = p.høyre;
+                p = p.høyre;                                        // Går videre
             }
         }
         return stabelTilFjerning;
