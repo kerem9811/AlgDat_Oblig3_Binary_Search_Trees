@@ -112,7 +112,9 @@ Du kan se på koden i kapittel 5.2 men må gjøre endringene som trengs for at f
 
         pekerNode = new Node<>(verdi, forelderNode);                // Oppretter ny node på pekernoden, med foreldernode
 
-        if (forelderNode == null) rot = pekerNode;                  // Hvis foreldernoden er null, blir pekernoden rotnoden
+        if (forelderNode == null){
+            rot = pekerNode;                                        // Hvis foreldernoden er null, blir pekernoden rotnoden
+        }
 
         else if (sammenligner < 0) {
             forelderNode.venstre = pekerNode;                       // Hvis verdi er mindre, blir det venstrebarn
@@ -250,11 +252,9 @@ Det er ikke tilstrekkelig å kun sette rot til null og antall til 0. */
             } else break;                                           // Hvis cmp er 0, har vi funnet noden vi skal fjerne
         }
 
-        // Hvis pekernode er null, finnes ikke verdien i treet ------------------------------------
-        if (pekerNode == null) return false;
+        if (pekerNode == null) return false;                        // Hvis pekernode er null, finnes ikke verdien i treet
 
-        // Etter å ha funnet noden, må vi håndtere 3 tilfeller for fjerning -----------------------
-
+        // Etter å ha funnet noden, må vi håndtere 3 tilfeller av fjerning
         // 1. pekernode har ingen barn, altså pekernode er en bladnode ****************************
         if (pekerNode.venstre == null && pekerNode.høyre == null) {
 
@@ -287,9 +287,9 @@ Det er ikke tilstrekkelig å kun sette rot til null og antall til 0. */
             if (barneNode != null) {
                 barneNode.forelder = forelderNode;                  // Oppdatere foreldrepekeren til barnenoden
             }
-
+        }
         // 3. p har to barn, både venstre og høyre, bruke inorden-traversering ********************
-        } else {
+        else {
             Node<T> etterfølgerForelder = pekerNode;                // Forelder til inorden-etterfølgeren til pekernoden
             Node<T> etterfølgerNode = pekerNode.høyre;              // Inorden-etterfølgeren til pekernoden er høyre barn
 
@@ -318,17 +318,37 @@ Det er ikke tilstrekkelig å kun sette rot til null og antall til 0. */
     }
 
     public int fjernAlle(T verdi) {
-        if (tom() || verdi == null) {                   // Hvis treet er tomt eller verdi er null
-            return 0;                                   // Returner 0 for ingen fjerninger
+        if (tom() || verdi == null) {                               // Hvis treet er tomt eller verdi er null
+            return 0;                                               // Returner 0 for ingen fjerninger
         }
+        int antallFjernet = 0;                                      // Initialiserer en teller for antall fjerninger
 
-        int antallFjernet = 0;                          // Initialiserer en teller for antall fjerninger
+        final var skalFjerneStabel = hentNodeStabel(verdi);         // Lager en stabel med nodene med verdi som skal fjernes
 
-        while (fjern(verdi)) {                          // Fjerner noder med verdien så lenge fjern(verdi) returnerer true
-            antallFjernet++;                            // Øker telleren for hver vellykkede fjerning
+        while (!skalFjerneStabel.isEmpty()) {                       // Så lenge det er noder i stabelen
+            Node<T> skalFjerneNode = skalFjerneStabel.pop();        // Fjerner noden fra stabelen
+            fjern(skalFjerneNode.verdi);                            // Fjerner noden
+            antallFjernet++;                                        // Øker telleren for hver vellykkede fjerning
         }
+        return antallFjernet;                                       // Returnerer det totale antallet noder med inputverdi som ble fjernet
+    }
 
-        return antallFjernet;                           // Returnerer det totale antallet noder med inputverdi som ble fjernet
+    private Stack<Node<T>> hentNodeStabel(T verdi) {
+        Stack<Node<T>> stabelTilFjerning = new Stack<>();           // Lager en stabel med noder
+
+        Node<T> p = rot;
+        while (p != null) {
+            int cmp = comp.compare(verdi, p.verdi);
+            if (cmp < 0) {
+                p = p.venstre;
+            } else if (cmp > 0) {
+                p = p.høyre;
+            } else {                                                // Fant noden med verdien vi leter etter
+                stabelTilFjerning.push(p);                          // Legger noden til stabelen
+                p = p.høyre;
+            }
+        }
+        return stabelTilFjerning;
     }
 
     public void nullstill() {
