@@ -216,7 +216,7 @@ For den rekursive metoden skal du lage et rekursivt kall som traverserer treet i
     }
 
     private void postOrdenRekursiv(Node<T> p, Oppgave<? super T> oppgave) {
-        if (p == null) return;                  // Unngå nullpeker
+        if (p == null) return;                  // Base case - Unngå nullpeker
         postOrdenRekursiv(p.venstre, oppgave);  // Huskeregel postorden:
         postOrdenRekursiv(p.høyre, oppgave);    // Venstre - høyre - rot
         oppgave.utførOppgave(p.verdi);          // Derfor ligger utførOppgave til slutt
