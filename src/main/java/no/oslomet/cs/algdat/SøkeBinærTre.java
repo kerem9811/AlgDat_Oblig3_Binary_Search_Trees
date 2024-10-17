@@ -94,8 +94,6 @@ men rotnoden skal ha null som sin forelder. Lag metoden public boolean leggInn(T
 verdi riktig sted i treet. En null-verdi er ikke lov, og skal kaste en NullPointerException.
 Du kan se på koden i kapittel 5.2 men må gjøre endringene som trengs for at forelder-pekeren får korrekt verdi for hver node*/
 
-    // TODO update readme :)
-
     public boolean leggInn(T verdi) {
         Objects.requireNonNull(verdi, "Verdi kan ikke være null-peker!");
 
