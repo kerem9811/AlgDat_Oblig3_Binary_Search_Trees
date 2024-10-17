@@ -169,33 +169,29 @@ Da metodene er private, kan vi anta at parameteren p ikke er null, da det antas 
 p som rot, og nestePostorden skal returnere noden som kommer etter p i postorden.
 Hvis p er den siste noden i postorden, skal metoden returnere null.*/
     private Node<T> førstePostorden(Node<T> p) {
-        if (p == null) return null;                 // Hvis null, returner null
-        while (true) {                              // Går i loop til vi finner første node i postorden
-            if (p.venstre != null) p = p.venstre;   // Hvis p har venstrebarn, gå dit
-            else if (p.høyre != null) p = p.høyre;  // Hvis p derimot har høyrebarn, gå dit
-            else return p;                          // Hvis ingen barn og er helt til venstre
+        if (p == null) return null;                                     // Hvis null, returner null
+        Node<T> pekerNode = p;
+        while (pekerNode.venstre != null || pekerNode.høyre != null) {  // Går nedover treet så lenge vi finner et barn
+            if (pekerNode.venstre != null){
+                pekerNode = pekerNode.venstre;// Hvis p har venstrebarn, gå dit
+            } else {
+                pekerNode = pekerNode.høyre;  // Hvis p derimot har høyrebarn, gå dit
+            }
         }
+        return pekerNode;                      // Hvis ingen barn og er helt til venstre
     }
 
     private Node<T> nestePostorden(Node<T> p) {
-        if (p == null) return null;                         // Hvis null, returner null
+        if (p == null) return null;                                 // Hvis null, returner null
 
-        if (p.forelder == null) {                           // Hvis p ikke har forelder, så er den rot.
-            return null;                                    // Rot er sist i postorden, ingen etter den, så returner null
-        } else if (p == p.forelder.høyre || p.forelder.høyre == null) {
-                                                            // Hvis p er høyre barn eller ikke har noen høyre søsken,
-            return p.forelder;                              // gå opp til forelder
-        } else {
-            p = p.forelder.høyre;                           // Hvis p er venstre barn og har et høyre søsken
-            while (p.venstre != null || p.høyre != null) {  // så bruker vi denne løkken til å traversere ned
-                if (p.venstre != null) {                    // høyre søskens subtre for å finne noden lengst til venstre
-                    p = p.venstre;
-                } else {
-                    p = p.høyre;
-                }
-            }                                               // Nå peker p på noden lengst til venstre i høyre søskens subtre
-            return p;                                       // Denne noden er den neste i postorden.
+        if (p.forelder == null) {                                   // Hvis p ikke har forelder, så er den rot.
+            return null;                                            // Rot er sist i postorden, ingen etter den, så returner null
         }
+        if (p == p.forelder.høyre || p.forelder.høyre == null){ // Hvis p er høyre barn eller ikke har noen høyre søsken,
+            return p.forelder;                                  // gå opp til forelder
+        } else {
+            return førstePostorden(p.forelder.høyre);           // Hvis p er venstre barn og har et høyre søsken,
+        }                                                       // finner vi noden lengst til venstre i høyre søskens subtre.
     }
 
 
@@ -240,9 +236,9 @@ Det er ikke tilstrekkelig å kun sette rot til null og antall til 0. */
     public boolean fjern(T verdi) {
         if (verdi == null) return false;
 
-        Node<T> nodeSomSkalFjernes = finnNode(verdi);       // Finn noden som skal fjernes
+        Node<T> nodeSomSkalFjernes = finnNode(rot, verdi);       // Finn noden som skal fjernes
 
-        if (nodeSomSkalFjernes == null) return false;       // Noden finnes ikke
+        if (nodeSomSkalFjernes == null) return false;       // Hvis noden ikke finnes
 
         fjernNode(nodeSomSkalFjernes);                      // Fjern noden fra treet
 
@@ -251,33 +247,17 @@ Det er ikke tilstrekkelig å kun sette rot til null og antall til 0. */
         return true;
     }
 
-    private Node<T> finnNode(T verdi) {                             // Hjelpemetode for å finne node
-        Node<T> pekerNode = rot;                                    // Starter i rot for å finne noden vi skal fjerne fra
-
-        while (pekerNode != null) {                                 // Looper gjennom treet
-            int cmp = comp.compare(verdi, pekerNode.verdi);         // Sammenligner input-verdi med nodens verdi
-
-            if (cmp < 0) {                                          // Hvis verdi er mindre, gå til venstre
-                pekerNode = pekerNode.venstre;
-            } else if (cmp > 0) {                                   // Hvis verdi er større, gå til høyre
-                pekerNode = pekerNode.høyre;
-            } else {                                                // Hvis cmp er 0, har vi funnet noden
-                return pekerNode;
-            }
-        }
-        return null;                                                // Returnerer null hvis noden ikke finnes
-    }
     // Hjelpemetode for å finne neste forekomst av verdi i treet
-    private Node<T> finnNode(Node<T> startNode, T verdi) {
+    private Node<T> finnNode(Node<T> startNode, T verdi) {          // Hjelpemetode for å finne node
         Node<T> pekerNode = startNode;
-        while (pekerNode != null) {
-            int cmp = comp.compare(verdi, pekerNode.verdi);
-            if (cmp == 0) {
-                return pekerNode;                                   // Fant noden
-            } else if (cmp < 0) {
-                pekerNode = pekerNode.venstre;
+        while (pekerNode != null) {                                 // Looper gjennom treet fra startNode
+            int sammenligner = comp.compare(verdi, pekerNode.verdi);// Sammenligner input-verdi med nodens verdi
+            if (sammenligner == 0) {
+                return pekerNode;                                   // Fant noden, hvis sammenligner returnerer 0
+            } else if (sammenligner < 0) {
+                pekerNode = pekerNode.venstre;                      // Hvis verdi er mindre, gå til venstre
             } else {
-                pekerNode = pekerNode.høyre;
+                pekerNode = pekerNode.høyre;                        // Hvis verdi er større, gå til høyre
             }
         }
         return null;                                                // Hvis noden ikke finnes i subtreetn
@@ -375,7 +355,7 @@ Det er ikke tilstrekkelig å kun sette rot til null og antall til 0. */
     private Stack<Node<T>> hentNodeStabel(T verdi) {
         Stack<Node<T>> nodeStabel = new Stack<>();                  // Lager en stabel med noder
 
-        Node<T> pekerNode = finnNode(verdi);                        // Finner noden vi leter etter
+        Node<T> pekerNode = finnNode(rot, verdi);                        // Finner noden vi leter etter
 
         while (pekerNode != null){                                  // Så lenge vi finner noder med verdien vi leter etter
         nodeStabel.push(pekerNode);                                 // så legger vi noder på stabelen
@@ -386,11 +366,11 @@ Det er ikke tilstrekkelig å kun sette rot til null og antall til 0. */
 
     public void nullstill() {
         if (tom()) return;
-
+        
         Random tilfeldig = new Random();
         switch (tilfeldig.nextInt(3)){                              // Velger metode tilfeldig
             case 0:
-                rot = nullstillPostorden(førstePostorden(rot));
+                rot = nullstillPostorden(rot);
                 break;
             case 1:
                 rot = nullstillRekursivt(rot);
@@ -402,9 +382,11 @@ Det er ikke tilstrekkelig å kun sette rot til null og antall til 0. */
         antall = 0;
     }
 
-    private Node<T> nullstillPostorden(Node<T> inputNode) {
+    private Node<T> nullstillPostorden(Node<T> p) {
 
-        if (inputNode == null) return null;
+        if (p == null) return null;
+
+        Node<T> inputNode = førstePostorden(p);                     // Finner første node i postorden
 
         while (inputNode != null) {
             Node<T> nesteNode = nestePostorden(inputNode);
