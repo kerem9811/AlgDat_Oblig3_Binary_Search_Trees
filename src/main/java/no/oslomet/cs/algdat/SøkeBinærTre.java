@@ -277,18 +277,16 @@ Det er ikke tilstrekkelig å kun sette rot til null og antall til 0. */
                 pekerNode = pekerNode.høyre;
             }
         }
-        return null; // Noden finnes ikke i subtreet
+        return null;                                                // Hvis noden ikke finnes i subtreetn
     }
 
     private void fjernNode(Node<T> pekerNode) {
-        Node<T> forelderNode = null;
-
-        // Setter foreldernoden, så lenge pekeren har en forelder
+        Node<T> forelderNode = null;                                // Setter foreldernoden, så lenge pekeren har en forelder
         if (pekerNode.forelder != null) forelderNode = pekerNode.forelder;
 
-        /*
-        Etter å ha funnet noden og dens forelder, må vi håndtere 3 tilfeller av fjerning
-        */
+        //
+        //Etter å ha funnet noden og dens forelder, må vi håndtere 3 tilfeller av fjerning
+        //
 
         // 1. pekernode har ingen barn, altså pekernode er en bladnode
         if (pekerNode.venstre == null && pekerNode.høyre == null) {
@@ -384,14 +382,37 @@ Det er ikke tilstrekkelig å kun sette rot til null og antall til 0. */
     }
 
     public void nullstill() {
+        if (tom()) return;
+
         Random tilfeldig = new Random();
-        int myntKast = tilfeldig.nextInt(2);
-        if (myntKast % 2 == 0) {                        // Velger tilfeldig metode for nullstilling
-            rot = nullstillRekursivt(rot);
-        } else {
-            rot = nullstillIterativt(rot);
+        switch (tilfeldig.nextInt(3)){                              // Velger metode tilfeldig
+            case 0:
+                rot = nullstillPostorden(førstePostorden(rot));
+                break;
+            case 1:
+                rot = nullstillRekursivt(rot);
+                break;
+            case 2:
+                rot = nullstillIterativt(rot);
+                break;
         }
         antall = 0;
+    }
+
+    private Node<T> nullstillPostorden(Node<T> inputNode) {
+
+        if (inputNode == null) return null;
+
+        while (inputNode != null) {
+            Node<T> nesteNode = nestePostorden(inputNode);
+            inputNode.verdi = null;                                 // Nullstill nodens verdi
+            inputNode.venstre = null;                               // Nullstill venstre barn
+            inputNode.høyre = null;                                 // Nullstill høyre barn
+            inputNode.forelder = null;
+            inputNode = nesteNode;
+        }
+        rot = null;
+        return null;
     }
 
     private Node<T> nullstillRekursivt(Node<T> inputNode) {
