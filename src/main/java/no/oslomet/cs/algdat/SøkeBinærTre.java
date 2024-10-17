@@ -1,5 +1,6 @@
 package no.oslomet.cs.algdat;
 
+import javax.imageio.plugins.jpeg.JPEGImageReadParam;
 import java.util.*;
 
 public class SøkeBinærTre<T>  implements Beholder<T> {
@@ -282,70 +283,75 @@ Det er ikke tilstrekkelig å kun sette rot til null og antall til 0. */
     private void fjernNode(Node<T> pekerNode) {
         Node<T> forelderNode = null;
 
-        if (pekerNode.forelder != null){                            // Setter foreldernoden, så lenge pekeren har en forelder
-            forelderNode = pekerNode.forelder;
-        }
+        // Setter foreldernoden, så lenge pekeren har en forelder
+        if (pekerNode.forelder != null) forelderNode = pekerNode.forelder;
 
-        // Etter å ha funnet noden og dens forelder, må vi håndtere 3 tilfeller av fjerning
-        // 1. pekernode har ingen barn, altså pekernode er en bladnode ****************************
+        /*
+        Etter å ha funnet noden og dens forelder, må vi håndtere 3 tilfeller av fjerning
+        */
+
+        // 1. pekernode har ingen barn, altså pekernode er en bladnode
         if (pekerNode.venstre == null && pekerNode.høyre == null) {
+            fjernBladNode(pekerNode, forelderNode);
 
-            if (pekerNode == rot) {                                 // pekernode er rot, treet blir tomt
-                rot = null;
-
-            } else {
-                assert forelderNode != null;
-                if (pekerNode == forelderNode.venstre) {            // pekernode er foreldernoden sitt venstre barn
-                    forelderNode.venstre = null;
-
-                } else {                                            // pekernode er foreldernoden sitt høyre barn
-                    forelderNode.høyre = null;
-                }
-            }
-
-            // 2. p har nøyaktig ett barn, enten venstre eller høyre **********************************
+        // 2. p har nøyaktig ett barn, enten venstre eller høyre
         } else if (pekerNode.venstre == null || pekerNode.høyre == null) {
+            fjernNodeMedEttBarn(pekerNode, forelderNode);
 
-            Node<T> barneNode = pekerNode.venstre;                  // barnenoden er høyre eller venstre barnet til pekernoden
-            if (barneNode == null) {
-                barneNode = pekerNode.høyre;
-            }
+        // 3. p har to barn, både venstre og høyre, bruke inorden-traversering
+        } else fjernNodeMedToBarn(pekerNode);
+    }
 
-            if (pekerNode == rot) {
-                rot = barneNode;                                    // barnenoden blir ny rot
-            } else {
-                assert forelderNode != null;
-                if (pekerNode == forelderNode.venstre) {
-                    forelderNode.venstre = barneNode;               // barnenoden erstatter pekernoden som foreldernoden sitt venstrebarn
-                } else {
-                    forelderNode.høyre = barneNode;                 // barnenoden erstatter pekernoden som foreldernoden sitt høyrebarn
-                }
-            }
+    private void fjernBladNode(Node<T> pekerNode, Node<T> forelderNode) {
+        if (pekerNode == rot) rot = null;                           // pekernode er rot, treet blir tomt
 
-            barneNode.forelder = forelderNode;                      // Oppdatere foreldrepekeren til barnenoden
+        else if (pekerNode == forelderNode.venstre){                // pekernode er foreldernoden sitt venstre barn
+            forelderNode.venstre = null;
+        } else {                                                    // pekernode er foreldernoden sitt høyre barn
+            forelderNode.høyre = null;
         }
-        // 3. p har to barn, både venstre og høyre, bruke inorden-traversering ********************
-        else {
-            Node<T> etterfølgerForelder = pekerNode;                // Forelder til inorden-etterfølgeren til pekernoden
-            Node<T> etterfølgerNode = pekerNode.høyre;              // Inorden-etterfølgeren til pekernoden er høyre barn
+    }
 
-            while (etterfølgerNode.venstre != null) {               // Finner inorden-etterfølgeren til pekernoden (minste verdi i høyre subtre)
-                etterfølgerForelder = etterfølgerNode;              // Oppdaterer etterfølgerforelderpekeren til å være forelder til etterfølgeren
-                etterfølgerNode = etterfølgerNode.venstre;          // Flytter etterfølgernoden til å sitt venstre barn
+    private void fjernNodeMedEttBarn(Node<T> pekerNode, Node<T> forelderNode) {
+
+        Node<T> barneNode = pekerNode.venstre;                  // barnenoden er enten høyre eller venstre barn
+
+        if (barneNode == null) barneNode = pekerNode.høyre;     // Hvis barn ikke er venstre, er det høyre
+
+        if (pekerNode == rot) {
+            rot = barneNode;                                    // barnenoden blir ny rot
+        } else {
+            assert forelderNode != null;
+            if (pekerNode == forelderNode.venstre) {
+                forelderNode.venstre = barneNode;               // barnenoden erstatter pekernoden som foreldernoden sitt venstrebarn
+            } else {
+                forelderNode.høyre = barneNode;                 // barnenoden erstatter pekernoden som foreldernoden sitt høyrebarn
             }
+        }
+        barneNode.forelder = forelderNode;                      // Oppdatere foreldrepekeren til barnenoden
+    }
 
-            pekerNode.verdi = etterfølgerNode.verdi;                // Kopierer verdien til inorden-etterfølgeren til pekernoden
+    private void fjernNodeMedToBarn(Node<T> pekerNode) {
 
-            if (etterfølgerNode.høyre != null) {                    // Hvis etterfølgernoden har et høyre barn
-                etterfølgerNode.høyre.forelder = etterfølgerForelder;// Oppdaterer forelderpekeren
-            }
+        Node<T> etterfølgerForelder = pekerNode;                // Forelder til inorden-etterfølgeren til pekernoden
+        Node<T> etterfølgerNode = pekerNode.høyre;              // Inorden-etterfølgeren til pekernoden er høyre barn
 
-            if (etterfølgerForelder == pekerNode) {                 // Hvis forelder til etterfølger var pekernoden sitt høyre barn
-                etterfølgerForelder.høyre = etterfølgerNode.høyre;  // Oppdaterer forelderpekeren
+        while (etterfølgerNode.venstre != null) {               // Finner inorden-etterfølgeren til pekernoden (minste verdi i høyre subtre)
+            etterfølgerForelder = etterfølgerNode;              // Oppdaterer etterfølgerforelderpekeren til å være forelder til etterfølgeren
+            etterfølgerNode = etterfølgerNode.venstre;          // Flytter etterfølgernoden til å sitt venstre barn
+        }
 
-            } else {                                                // Hvis etterfølgerNode ikke var pekernoden sitt høyre barn
-                etterfølgerForelder.venstre = etterfølgerNode.høyre;// Oppdaterer etterfølgerForelder sitt venstre barn til etterfølgerNode sitt høyre barn
-            }
+        pekerNode.verdi = etterfølgerNode.verdi;                // Kopierer verdien til inorden-etterfølgeren til pekernoden
+
+        if (etterfølgerNode.høyre != null) {                    // Hvis etterfølgernoden har et høyre barn
+            etterfølgerNode.høyre.forelder = etterfølgerForelder;// Oppdaterer forelderpekeren
+        }
+
+        if (etterfølgerForelder == pekerNode) {                 // Hvis forelder til etterfølger var pekernoden sitt høyre barn
+            etterfølgerForelder.høyre = etterfølgerNode.høyre;  // Oppdaterer forelderpekeren
+
+        } else {                                                // Hvis etterfølgerNode ikke var pekernoden sitt høyre barn
+            etterfølgerForelder.venstre = etterfølgerNode.høyre;// Oppdaterer etterfølgerForelder sitt venstre barn til etterfølgerNode sitt høyre barn
         }
     }
 
@@ -411,7 +417,7 @@ Det er ikke tilstrekkelig å kun sette rot til null og antall til 0. */
             }
 
             if (pekerNode.venstre != null) {                        // Hvis noden har et venstre barn
-                nodeStabel.push(pekerNode.venstre);                     // Legg venstre barn på stabelen
+                nodeStabel.push(pekerNode.venstre);                 // Legg venstre barn på stabelen
             }
 
             pekerNode.verdi = null;                                 // Nullstill nodens verdi
