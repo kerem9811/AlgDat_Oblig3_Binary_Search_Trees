@@ -1,5 +1,5 @@
 # Obligatorisk Oppgave 3 i DATS2300 - Algoritmer og Datastrukturer - Høst 2024
-# Binære søketrær, innlegging & fjerning
+## Binære søketrær, innlegging & fjerning
 
 Denne oppgaven er en innlevering i Algoritmer og datastrukturer.
 Oppgaven er levert av:
